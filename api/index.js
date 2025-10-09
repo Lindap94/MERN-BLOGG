@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose=require('mongoose');
-const User=require("./models/user");
+const User=require('./models/User');
 const app=express();
 
 
@@ -9,12 +9,12 @@ app.use(cors());           // autoriser les appels de localhost:3000
 app.use(express.json()); 
  //mongoose.connect("mongodb+srv://dinadinatest2019_db_user:XzrvEmtX2XSaid0R@cluster0.wsgyavo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
-// mongoose.connect('mongodb+srv://dinadinatest2019_db_user:XzrvEmtX2XSaid0R@cluster0.wsgyavo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// })
-// .then(() => console.log("✅ Connecté à MongoDB"))
-// .catch(err => console.error("❌ Erreur MongoDB :", err));
+mongoose.connect('mongodb+srv://dinadinatest2019_db_user:XzrvEmtX2XSaid0R@cluster0.wsgyavo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log("✅ Connecté à MongoDB"))
+.catch(err => console.error("❌ Erreur MongoDB :", err));
 
 
 
@@ -26,12 +26,13 @@ app.post('/register',async(req,res)=>{
     const { username, password } = req.body;
   console.log("📩 Données reçues :",req.body);
 
-
- // const UserDoc =await User.create({username,password});
+try{
+  const UserDoc =await User.create({username,password});
 
   // Réponse envoyée au frontend
- // res.json({ UserDoc });
- res.json({ message: 'Utilisateur reçu ✅', user: username });
+  res.json({ UserDoc });
+}catch(e) {console.log("errrrrrrrrrrrrrrrrror");res.status(400).json(e);}
+ //res.json({ message: 'Utilisateur reçu ✅', user: username });
 });
 //XzrvEmtX2XSaid0R
 //mongodb+srv://dinadinatest2019_db_user:XzrvEmtX2XSaid0R@cluster0.wsgyavo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
