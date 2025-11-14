@@ -4,12 +4,27 @@ const mongoose=require('mongoose');
 const User=require('./models/User');
 const app=express();
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser'); // ✅ pour lire les cookies
 
+
+
+const salt = bcrypt.genSaltSync(10);
+const secret = 'mernbloG_secret_key_123';
 //const salt='aslvdkdkffddf';
 
+//app.use(cookieParser());
+
+//const cookieParser=require('cookie-parser');//1 23 54
 
 
-app.use(cors());           // autoriser les appels de localhost:3000
+
+app.use(cors({
+  origin: 'http://localhost:3000', credentials: true, }
+));           // autoriser les appels de localhost:3000
+app.use(cookieParser()); // ✅ indispensable pour req.cookies
+
+
 app.use(express.json()); 
  //mongoose.connect("mongodb+srv://dinadinatest2019_db_user:XzrvEmtX2XSaid0R@cluster0.wsgyavo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
@@ -27,7 +42,8 @@ app.post('/register',async(req,res)=>{
 //      res.json({message: "test ok3",req.body});
 //      console.log("test");
 // });
-const salt = bcrypt.genSaltSync(10);
+ // tu peux changer cette clé
+
     const { username, password } = req.body;
   console.log("📩 Données reçues :",req.body);
 
@@ -53,7 +69,38 @@ app.post('/login',async(req,res)=>{
       return res.status(400).json({ message: "Utilisateur introuvable ❌" });
     }
   const passOk = bcrypt.compareSync(password,UserDoc.password);
-  res.json({message:'passwor',passOk})
+  console.log('message passok ',passOk);
+  //res.json({message:'passwor',passOk});
+  if(passOk)
+  {
+    
+jwt.sign({username,id:UserDoc._id},secret,{},(err,token)=>
+{
+if(err) throw err;
+//res.json(token);
+res.cookie('tokenn',token).json('ok');
+}
+);
+     /* jwt.sign(
+      { username: UserDoc.username, id: UserDoc._id },
+      secret,
+      { expiresIn: '1h' },
+      (err, token) => {
+        if (err) throw err;
+        res.json({
+          message: "Connexion réussie ✅",
+          token,
+          user: { username: UserDoc.username, id: UserDoc._id },
+        });
+      }
+    );*/
+
+
+
+  }else{
+    res.status(400).json('wrong credential')
+  }
+
   //res.json(UserDoc);
 
 }catch (err)
@@ -64,6 +111,11 @@ app.post('/login',async(req,res)=>{
 )
 //XzrvEmtX2XSaid0R
 //mongodb+srv://dinadinatest2019_db_user:XzrvEmtX2XSaid0R@cluster0.wsgyavo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+
+app.get('/profile',(req,res)=>{
+  res.json(req.cookies);
+})
+
 app.listen(4000, () => {
     console.log("✅ Serveur démarré sur http://localhost:4000");
 });

@@ -1,21 +1,40 @@
-import { useState } from "react";
+import { use, useState } from "react";
+import { Navigate } from "react-router-dom";
+
 
 export default function LoginPage()
 {
     const[username,setUsername]=useState('');
     // const [password,setPassword]=useState(); 
     const[password,setPassword]=useState('');
+    const[redirect,setRedirect]=useState(false);
    async function login(ev)
    {
     ev.preventDefault();
      const response = await fetch('http://localhost:4000/login',{
         method:'POST',
         body: JSON.stringify({username,password}),
-        headers:{'Content-Type':'application/json'}
+        headers:{'Content-Type':'application/json'},
+        credentials:'include'
     })  
     const data = await response.json();
        console.log("✅ Réponse du serveur :", data);
+
+       if(response.ok)
+       {
+       setRedirect(true);
+       }
+       else{alert('worng credential');}
+
+    //    if(redirect){ console.log("redirect");
+    //     return <Navigate to={'/'} />
+    //    }
+   
    }
+         if (redirect) {
+    console.log("redirect triggered ✅");
+    return <Navigate to="/" />;
+  } 
    
    
     return (   
