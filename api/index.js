@@ -60,7 +60,7 @@ try{
  //res.json({ message: 'Utilisateur reçu ✅', user: username });
 });
 
-app.post('/login',async(req,res)=>{
+app.post('/log',async(req,res)=>{
  try{
   const { username,password }=req.body;
   console.log('donnez recu ',req.body);
@@ -78,7 +78,16 @@ jwt.sign({username,id:UserDoc._id},secret,{},(err,token)=>
 {
 if(err) throw err;
 //res.json(token);
-res.cookie('tokenn',token).json('ok');
+res
+    
+  .cookie('tokenn', token, { httpOnly: true })
+  .json({
+    message: 'ok',
+    token: token
+  });
+
+ //     .cookie('tokenn', token)
+   // .cookie('tokenn',token).json('ok');
 }
 );
      /* jwt.sign(
@@ -112,9 +121,18 @@ res.cookie('tokenn',token).json('ok');
 //XzrvEmtX2XSaid0R
 //mongodb+srv://dinadinatest2019_db_user:XzrvEmtX2XSaid0R@cluster0.wsgyavo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 
-app.get('/profile',(req,res)=>{
-  res.json(req.cookies);
-})
+  app.get('/pro',(req,res)=>{
+    const {tokenn}=req.cookies;
+    if (!tokenn) {
+      return res.status(401).json({ message: 'Token manquant' });
+    }
+
+    jwt.verify(tokenn,secret,{},(err,info)=>{
+      if(err)throw err;
+      res.json(info);
+    });
+    //res.json(req.cookies);
+  })
 
 app.listen(4000, () => {
     console.log("✅ Serveur démarré sur http://localhost:4000");

@@ -11,14 +11,14 @@ export default function LoginPage()
    async function login(ev)
    {
     ev.preventDefault();
-     const response = await fetch('http://localhost:4000/login',{
+     const response = await fetch('http://localhost:4000/log',{
         method:'POST',
         body: JSON.stringify({username,password}),
         headers:{'Content-Type':'application/json'},
         credentials:'include'
     })  
     const data = await response.json();
-       console.log("✅ Réponse du serveur :", data);
+       console.log("✅ Réponse du serveur :", data.token);
 
        if(response.ok)
        {
